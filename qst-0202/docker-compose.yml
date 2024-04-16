@@ -1,8 +1,8 @@
 version: "3"
-name: "qst-0201"
+name: "qst-0202"
 services:
-  qst-0301:
-    container_name: "qst-0201-frontend"
+  qst-0202:
+    container_name: "qst-0202-frontend"
     build:
       context: ./frontend
       dockerfile: Dockerfile
