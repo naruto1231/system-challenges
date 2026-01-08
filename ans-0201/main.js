@@ -11,6 +11,7 @@ const command = process.argv[2];
 
 try {
   if (command === 'list-users') {
+    // ユーザー一覧表示
     db.all('SELECT * FROM users ORDER BY id ASC', (err, rows) => {
       if (err) {
         console.error('ユーザーの一覧表示に失敗しました。');
@@ -31,23 +32,34 @@ try {
     const password = process.argv[5];
 
     if (!name || isNaN(age) || !password) {
-      throw new Error();
+      console.error('ユーザーの追加に失敗しました。');
+      process.exit(1);
     }
 
-    const sql = 'INSERT INTO users (name, age, password) VALUES (?, ?, ?)';
-    db.run(sql, [name, age, password], err => {
+    // MAX(id) + 1 を取得して明示的に ID をセット
+    db.get('SELECT MAX(id) as maxId FROM users', (err, row) => {
       if (err) {
         console.error('ユーザーの追加に失敗しました。');
         return;
       }
-      console.log('ユーザーの追加に成功しました。');
+
+      const nextId = (row.maxId || 0) + 1;
+      const sql = 'INSERT INTO users (id, name, age, password) VALUES (?, ?, ?, ?)';
+      db.run(sql, [nextId, name, age, password], err => {
+        if (err) {
+          console.error('ユーザーの追加に失敗しました。');
+          return;
+        }
+        console.log('ユーザーの追加に成功しました。');
+      });
     });
 
   } else if (command === 'delete-user') {
     const id = parseInt(process.argv[3], 10);
 
     if (isNaN(id)) {
-      throw new Error();
+      console.error('ユーザーの削除に失敗しました。');
+      process.exit(1);
     }
 
     const sql = 'DELETE FROM users WHERE id = ?';
@@ -60,7 +72,7 @@ try {
     });
 
   } else {
-    throw new Error();
+    console.error('処理に失敗しました。');
   }
 
 } catch (e) {
