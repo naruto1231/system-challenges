@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  proxy:
+    build: ./proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - aaa
+      - bbb
+
+  aaa:
+    build: ./aaa
+
+  bbb:
+    build: ./bbb
